@@ -18,7 +18,7 @@ class Webhook extends CI_Controller {
   function __construct()
   {
     parent::__construct();
-    $this->load->model('tebakkode_m');
+    $this->load->model('Tebakkode_m');
 
     // create bot object
 $httpClient = new CurlHTTPClient($_ENV['CHANNEL_ACCESS_TOKEN']);
@@ -39,7 +39,7 @@ $this->bot  = new LINEBot($httpClient, ['channelSecret' => $_ENV['CHANNEL_SECRET
     $this->events = json_decode($body, true);
 
     // log every event requests);
-    $this->tebakkode_m->log_events($this->signature, $body);
+    $this->Tebakkode_m->log_events($this->signature, $body);
   
 
   foreach ($this->events['events'] as $event)
@@ -54,7 +54,7 @@ $this->bot  = new LINEBot($httpClient, ['channelSecret' => $_ENV['CHANNEL_SECRET
 
    // get user data from database
 
-   $this->user = $this->tebakkode_m     ->getUser($event['source']['userId']);
+   $this->user = $this->Tebakkode_m     ->getUser($event['source']['userId']);
 
    // respond event
 
@@ -96,7 +96,7 @@ private function followCallback($event)
 
         // save user data
 
-        $this->tebakkode_m->saveUser($profile);
+        $this->Tebakkode_m->saveUser($profile);
 
     }
 
@@ -127,12 +127,12 @@ private function textMessage($event)
 
             // reset score
 
-            $this->tebakkode_m->setScore($this->user['user_id'], 0);
+            $this->Tebakkode_m->setScore($this->user['user_id'], 0);
 
 
             // update number progress
 
-            $this->tebakkode_m->setUserProgress($this->user['user_id'], 1);
+            $this->Tebakkode_m->setUserProgress($this->user['user_id'], 1);
 
 
             // send question no.1
@@ -168,7 +168,7 @@ public function sendQuestion($user_id, $questionNum = 1)
 
     // get question from database
 
-    $question = $this->tebakkode_m->getQuestion($questionNum);
+    $question = $this->Tebakkode_m->getQuestion($questionNum);
 
 
     // prepare answer options
@@ -205,11 +205,11 @@ private function checkAnswer($message)
 
     // if answer is true, increment score
 
-    if($this->tebakkode_m->isAnswerEqual($this->user['number'], $message)){
+    if($this->Tebakkode_m->isAnswerEqual($this->user['number'], $message)){
 
         $this->user['score']++;
 
-        $this->tebakkode_m->setScore($this->user['user_id'], $this->user['score']);
+        $this->Tebakkode_m->setScore($this->user['user_id'], $this->user['score']);
 
     }
 
@@ -220,7 +220,7 @@ private function checkAnswer($message)
 
         // update number progress
 
-        $this->tebakkode_m->setUserProgress($this->user['user_id'], $this->user['number'] + 1);
+        $this->Tebakkode_m->setUserProgress($this->user['user_id'], $this->user['number'] + 1);
 
 
         // send next number
@@ -247,7 +247,7 @@ private function checkAnswer($message)
         $this->bot->pushMessage($this->user['user_id'], $textMessageBuilder);
 
 
-        $this->tebakkode_m->setUserProgress($this->user['user_id'], 0);
+        $this->Tebakkode_m->setUserProgress($this->user['user_id'], 0);
 
     }
 
